@@ -1,1 +1,4 @@
-﻿node_modules ndist .env n.DS_Store
+﻿node_modules/
+node_modules ndist .env n.DS_Store
+
+/src/generated/prisma
