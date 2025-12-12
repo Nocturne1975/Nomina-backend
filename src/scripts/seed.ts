@@ -1,18 +1,22 @@
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import prisma from '../prisma';
 
 async function main() {
-  // Ajoute ici tes données de seed, exemple :
-  // await prisma.user.create({ data: { name: 'Alice', email: 'alice@example.com' } });
-  console.log('Seed terminé !');
+  await prisma.user.upsert({
+    where: { username: 'admin' },
+    update: {},
+    create: {
+      username: 'admin',
+      passwordHash: 'changeme', // Remplacer par un vrai hash en production
+      email: 'admin@example.com',
+      role: 'admin'
+    }
+  });
+  console.log('Seed done');
 }
 
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+main().catch(e => {
+  console.error(e);
+  process.exit(1);
+}).finally(async () => {
+  await prisma.$disconnect();
+});

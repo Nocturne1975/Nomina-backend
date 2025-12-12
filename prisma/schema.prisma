@@ -12,3 +12,100 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+model User {
+  id            Int      @id @default(autoincrement())
+  username      String   @unique
+  passwordHash  String
+  email         String   @unique
+  role          String   @default("Editor") // Ex: Admin, Editor, Viewer
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Categorie {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt  
+
+  nomPersonnages NomPersonnage[] // opposite relation field
+  lieux Lieux[]
+  fragmentsHistoire FragmentsHistoire[] // opposite relation field
+  titres Titre[] // opposite relation field
+  concepts Concept[] // opposite relation field
+}
+
+model Culture {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  nomPersonnages NomPersonnage[] // opposite relation field
+  fragmentsHistoire FragmentsHistoire[] // opposite relation field
+  titres Titre[] // opposite relation field
+}
+
+model NomPersonnage {
+  id          Int       @id @default(autoincrement())
+  valeur      String?
+  genre       String?
+  cultureId   Int?
+  culture     Culture?  @relation(fields: [cultureId], references: [id])
+  categorieId Int?
+  categorie   Categorie? @relation(fields: [categorieId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Lieux {
+  id          Int       @id @default(autoincrement())
+  value       String
+  type        String?
+  categorieId Int?
+  categorie   Categorie? @relation(fields: [categorieId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model FragmentsHistoire {
+  id          Int       @id @default(autoincrement())
+  texte       String
+  appliesTo   String?
+  genre       String?
+  minNameLength Int?
+  maxNameLength Int?
+  cultureId   Int?
+  culture     Culture?  @relation(fields: [cultureId], references: [id])
+  categorieId Int?
+  categorie   Categorie? @relation(fields: [categorieId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Titre {
+  id          Int       @id @default(autoincrement())
+  valeur      String
+  type        String?
+  genre       String?
+  cultureId   Int?
+  culture     Culture?  @relation(fields: [cultureId], references: [id])
+  categorieId Int?
+  categorie   Categorie? @relation(fields: [categorieId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Concept {
+  id          Int       @id @default(autoincrement())
+  valeur      String
+  type        String?
+  mood        String?
+  keywords    String?
+  categorieId Int?
+  categorie   Categorie? @relation(fields: [categorieId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
