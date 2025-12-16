@@ -13,13 +13,16 @@ datasource db {
   provider = "postgresql"
 }
 model User {
-  id            Int      @id @default(autoincrement())
+  id            Int       @id @default(autoincrement())
   username      String   @unique
-  passwordHash  String
+  password      String
   email         String   @unique
   role          String   @default("Editor") // Ex: Admin, Editor, Viewer
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now())
+
+ 
 }
 
 model Categorie {

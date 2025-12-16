@@ -6,7 +6,7 @@ async function main() {
     update: {},
     create: {
       username: 'admin',
-      passwordHash: 'changeme', // Remplacer par un vrai hash en production
+      password: 'changeme', // Remplacer par un vrai hash en production
       email: 'admin@example.com',
       role: 'admin'
     }

@@ -1,6 +1,6 @@
-import express from 'express';
-import prisma from './prisma';
 
+import express from 'express';
+import userRoutes from './routes/userRoutes';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -8,9 +8,7 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
 app.get('/', (_req, res) => res.send('Nomina-backend running'));
-app.get('/users', async (_req, res) => {
-  const users = await prisma.user.findMany();
-  res.json(users);
-});
+app.use('/users', userRoutes);
 
 app.listen(PORT, () => console.log(`Backend: http://localhost:${PORT}`));
+
