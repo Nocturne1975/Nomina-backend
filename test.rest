@@ -1,0 +1,44 @@
+GET http://localhost:3000/users
+###
+
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+  "username": "Nocture15",
+  "email": "test@example32.com",
+  "password": "motdepasse", 
+  "role": "user"
+}
+###
+
+GET http://localhost:3000/users
+Authorization: Bearer <votre_token_jwt>
+###
+
+GET http://localhost:3000/categories/total
+###
+
+GET http://localhost:3000/users/1
+###
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "username": "Nocture75",
+  "password": "motdepasse"
+}
+###
+GET http://localhost:3000/users
+###
+GET http://localhost:3000/users/12
+###
+PUT http://localhost:3000/users/1
+Content-Type: application/json
+
+{
+  "email": "newemail@example.com"
+}
+###
+DELETE http://localhost:3000/users/9
+###
