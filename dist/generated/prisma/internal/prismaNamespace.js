@@ -127,6 +127,7 @@ exports.UserScalarFieldEnum = {
     password: 'password',
     email: 'email',
     role: 'role',
+    isActive: 'isActive',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
 };

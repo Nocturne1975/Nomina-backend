@@ -7,30 +7,60 @@ Nomina s’inscrit dans l’industrie du logiciel et de la création numérique,
 Slogan court (suggestion pour logo) : **Créez, Nommez, Racontez**
 
 * * *
+## Installation & Lancement
+
+1. Clonez le dépôt et installez les dépendances : git clone https://github.com/Nocturne1975/Nomina-backend
+   cd Nomina-backend
+   npm install
+
+2. Configurez le fichier `.env` à la racine :
+   DATABASE_URL=postgresql://...
+  JWT_SECRET=une_chaine_secrete
+  JWT_EXPIRES_IN=1h
+
+3. Lancez le serveur :  npm run dev
+  
+4. Testez l’API avec le fichier `test.rest` (VS Code) ou Postman.
+
+## Endpoints principaux
+
+| Méthode | Endpoint                  | Description                  |
+|---------|---------------------------|------------------------------|
+| GET     | /users                    | Liste tous les utilisateurs  |
+| POST    | /users                    | Crée un utilisateur          |
+| ...     | ...                       | ...                          |
+
+## Schéma ER
+
+Le schéma ER est disponible à la racine du dépôt sous forme d’image/PDF.
+
 
 ## Table des matières
 
-- [NOMINA — API Génératrice \& Narratrice de Noms](#nomina--api-génératrice--narratrice-de-noms)
-  - [Table des matières](#table-des-matières)
-  - [Présentation](#présentation)
-  - [Utilisateurs cibles](#utilisateurs-cibles)
-  - [Objectifs](#objectifs)
-  - [Fonctionnalités principales](#fonctionnalités-principales)
-  - [Spécification API (exemples)](#spécification-api-exemples)
-    - [POST /generate-name](#post-generate-name)
-    - [POST /generate-place](#post-generate-place)
-  - [Exemples d'utilisation](#exemples-dutilisation)
-    - [curl](#curl)
-    - [Client Python (exemple minimal)](#client-python-exemple-minimal)
-  - [Architecture technique (version locale / gratuite)](#architecture-technique-version-locale--gratuite)
-  - [Design \& Branding](#design--branding)
-    - [Palette \& typographie](#palette--typographie)
-    - [Iconographie recommandée (pour logo)](#iconographie-recommandée-pour-logo)
-    - [Slogans courts possibles (pour le logo)](#slogans-courts-possibles-pour-le-logo)
-  - [Déploiement (options simples)](#déploiement-options-simples)
-  - [Contribution \& contact](#contribution--contact)
-  - [Licence](#licence)
-  - [Annexes (à inclure dans le dossier)](#annexes-à-inclure-dans-le-dossier)
+- [NOMINA — API Génératrice \& Narratrice de Noms]
+  - [Installation \& Lancement]
+  - [Endpoints principaux]
+  - [Schéma ER]
+  - [Table des matières]
+  - [Présentation]
+  - [Utilisateurs cibles]
+  - [Objectifs]
+  - [Fonctionnalités principales]
+  - [Spécification API (exemples)]
+    - [POST /generate-name]
+    - [POST /generate-place]
+  - [Exemples d'utilisation]
+    - [curl]
+    - [Client Python (exemple minimal)]
+  - [Architecture technique (version locale / gratuite)]
+  - [Design \& Branding]
+    - [Palette \& typographie]
+    - [Iconographie recommandée (pour logo)]
+    - [Slogans courts possibles (pour le logo)]
+  - [Déploiement (options simples)]
+  - [Contribution \& contact]
+  - [Licence]
+  - [Annexes (à inclure dans le dossier)]
 
 * * *
 

@@ -13,15 +13,16 @@ const FragmentsHistoireRoutes_1 = __importDefault(require("./routes/FragmentsHis
 const TitreRoutes_1 = __importDefault(require("./routes/TitreRoutes"));
 const ConceptRoutes_1 = __importDefault(require("./routes/ConceptRoutes"));
 const app = (0, express_1.default)();
-const PORT = process.env.PORT || 3000;
 app.use(express_1.default.json());
-app.get('/', (_req, res) => res.send('Nomina-backend running'));
-app.use('/users', userRoutes_1.default);
 app.use('/auth', authRoutes_1.default);
+app.use('/users', userRoutes_1.default);
 app.use('/categories', CategorieRoutes_1.default);
 app.use('/cultures', CultureRoutes_1.default);
 app.use('/nomPersonnages', NomPersonnageRoutes_1.default);
 app.use('/fragmentsHistoire', FragmentsHistoireRoutes_1.default);
 app.use('/titres', TitreRoutes_1.default);
 app.use('/concepts', ConceptRoutes_1.default);
-app.listen(PORT, () => console.log(`Backend: http://localhost:${PORT}`));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Notre serveur est lance sur le port ${PORT}`);
+});
