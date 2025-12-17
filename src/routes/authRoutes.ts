@@ -1,11 +1,8 @@
 import { Router } from 'express';
+import { loginController } from '../controllers/authControllers';
 
 const router = Router();
 
-// Exemple de route d'authentification
-router.post('/login', (req, res) => {
-  // Logique de connexion ici
-  res.send('Connexion');
-});
+router.post('/login', loginController);
 
 export default router;

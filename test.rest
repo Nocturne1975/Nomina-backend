@@ -11,11 +11,6 @@ Content-Type: application/json
   "role": "user"
 }
 ###
-
-GET http://localhost:3000/users
-Authorization: Bearer <votre_token_jwt>
-###
-
 GET http://localhost:3000/categories/total
 ###
 
@@ -54,7 +49,7 @@ Content-Type: application/json
 ### 1. Créer une catégorie (note l'id retourné, ex: 2)
 POST http://localhost:3000/categories
 Content-Type: application/json
-Authorization: Bearer <TON_TOKEN_JWT>
+Authorization: Bearer "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NjU5NzQ3NTYsImV4cCI6MTc2NTk3ODM1Nn0.Zyx_8yqOwEYSNd5yD5hyQegZdFwCmJS7c3mLH6ZpA0E"
 
 {
   "name": "Catégorie Test",
@@ -65,7 +60,7 @@ Authorization: Bearer <TON_TOKEN_JWT>
 ### 2. Créer un concept lié à la catégorie créée (remplace 2 par l'id réel)
 POST http://localhost:3000/concepts
 Content-Type: application/json
-Authorization: Bearer <TON_TOKEN_JWT>
+Authorization: Bearer "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NjU5NzQ3NTYsImV4cCI6MTc2NTk3ODM1Nn0.Zyx_8yqOwEYSNd5yD5hyQegZdFwCmJS7c3mLH6ZpA0E"
 
 {
   "valeur": "Liberté",
@@ -81,13 +76,13 @@ GET http://localhost:3000/concepts
 ###
 
 ### 4. Récupérer un concept par id (remplace 1 par l'id réel du concept créé)
-GET http://localhost:3000/concepts/1
+GET http://localhost:3000/concepts/4
 ###
 
 ### 5. Mettre à jour un concept (remplace 1 par l'id réel)
-PUT http://localhost:3000/concepts/1
+PUT http://localhost:3000/concepts/4
 Content-Type: application/json
-Authorization: Bearer <TON_TOKEN_JWT>
+Authorization: Bearer "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NjU5NzQ3NTYsImV4cCI6MTc2NTk3ODM1Nn0.Zyx_8yqOwEYSNd5yD5hyQegZdFwCmJS7c3mLH6ZpA0E"
 
 {
   "mood": "Épique"
@@ -96,10 +91,38 @@ Authorization: Bearer <TON_TOKEN_JWT>
 
 ### 6. Supprimer un concept (remplace 1 par l'id réel)
 DELETE http://localhost:3000/concepts/1
-Authorization: Bearer <TON_TOKEN_JWT>
+Authorization: Bearer "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NjU5NzQ3NTYsImV4cCI6MTc2NTk3ODM1Nn0.Zyx_8yqOwEYSNd5yD5hyQegZdFwCmJS7c3mLH6ZpA0E"
 ###
 
 ### 7. Supprimer la catégorie créée (remplace 2 par l'id réel)
 DELETE http://localhost:3000/categories/2
-Authorization: Bearer <TON_TOKEN_JWT>
+Authorization: Bearer "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NjU5NzQ3NTYsImV4cCI6MTc2NTk3ODM1Nn0.Zyx_8yqOwEYSNd5yD5hyQegZdFwCmJS7c3mLH6ZpA0E"
 ###
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+  "username": "nouvelutilisateur4",
+  "email": "nouvelutilisateur4@example.com",
+  "password": "motdepasse",
+  "role": "user"
+}
+###
+
+###
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "nouvelutilisateur@example.com",
+  "password": "motdepasse"
+}
+###
+POST http://localhost:3000/categories
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+{
+  "name": "Test",
+  "description": "Catégorie test"
+}
