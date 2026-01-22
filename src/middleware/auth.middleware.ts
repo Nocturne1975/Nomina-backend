@@ -1,41 +1,51 @@
 import type { Request, Response, NextFunction } from 'express';
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import { verifyToken } from '@clerk/backend';
 
-interface JwtUserPayload extends JwtPayload {
-  sub: string;    // identifiant du user (string si tu utilises UUID ou string id)
-  email: string;
-  role: string;   // ou string[] si tu as plusieurs rôles
-  // iat et exp sont fournis par JwtPayload
-  userId?: number;
-  roles?: string[]; // adapte selon ton payload
-}
-
-export const authenticate = (req: Request, res: Response, next: NextFunction) => {
+const extractBearerToken = (req: Request): string | null => {
   const authHeader = req.headers.authorization;
-  if (!authHeader) {
-    return res.status(401).json({ error: 'Authorization manquante' });
-  }
+  if (!authHeader) return null;
 
   const parts = authHeader.split(' ');
-  if (parts.length !== 2 || parts[0] !== 'Bearer') {
-    return res.status(401).json({ error: 'Format d\'authorization invalide' });
-  }
+  if (parts.length !== 2 || parts[0] !== 'Bearer') return null;
+  return parts[1];
+};
 
-  const token = parts[1];
-  const secret = process.env.JWT_SECRET;
-  if (!secret) {
-    // En dev/test tu peux choisir de lancer une erreur pour te rappeler de configurer la variable.
-    console.error('JWT_SECRET non défini dans les variables d\'environnement');
+export const requireAuth = async (req: Request, res: Response, next: NextFunction) => {
+  const token = extractBearerToken(req);
+  if (!token) return res.status(401).json({ error: 'Authorization manquante' });
+
+  const secretKey = process.env.CLERK_SECRET_KEY;
+  if (!secretKey) {
+    console.error('CLERK_SECRET_KEY non défini');
     return res.status(500).json({ error: 'Configuration serveur manquante' });
   }
 
   try {
-    const decoded = jwt.verify(token, secret) as JwtUserPayload;
-    // Attache un objet typé sur req.user (voir declaration d'interface)
-    req.user = decoded;
+    const { payload } = await verifyToken(token, { secretKey });
+    const p = payload as { sub?: unknown; sid?: unknown };
+    const userId = typeof p.sub === 'string' ? p.sub : null;
+    if (!userId) return res.status(401).json({ error: 'Token invalide' });
+
+    req.auth = {
+      userId,
+      sessionId: typeof p.sid === 'string' ? p.sid : undefined,
+    };
     next();
   } catch (err) {
-    console.error('JWT verification failed:', err);
+    console.error('Clerk token verification failed:', err);
     return res.status(401).json({ error: 'Token invalide ou expiré' });
   }
+};
+
+export const requireAdmin = (req: Request, res: Response, next: NextFunction) => {
+  const adminUserId = process.env.ADMIN_CLERK_USER_ID;
+  if (!adminUserId) {
+    return res.status(500).json({ error: 'ADMIN_CLERK_USER_ID non défini' });
+  }
+
+  const userId = req.auth?.userId;
+  if (!userId) return res.status(401).json({ error: 'Non authentifié' });
+  if (userId !== adminUserId) return res.status(403).json({ error: 'Accès refusé' });
+
+  next();
 };

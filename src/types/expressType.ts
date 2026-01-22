@@ -1,9 +1,9 @@
-import type { JWTPayload } from './authType';
+import type { ClerkAuthPayload } from './authType';
 
 declare global {
   namespace Express {
     interface Request {
-      user?: JWTPayload;
+      auth?: ClerkAuthPayload;
     }
   }
 }

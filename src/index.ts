@@ -1,5 +1,10 @@
 
 import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+
+// Important en dev (ts-node): assure que l'augmentation Express (req.auth) est chargée.
+import './types/expressType';
 import userRoutes from './routes/userRoutes';
 import authRoutes from './routes/authRoutes';
 import CategorieRoutes from './routes/CategorieRoutes';
@@ -10,11 +15,34 @@ import TitreRoutes from './routes/TitreRoutes';
 import ConceptRoutes from './routes/ConceptRoutes';
 
 const app = express();
+dotenv.config();
+
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
+const corsOrigins = (
+	process.env.CORS_ORIGIN ||
+	process.env.CORS_ORIGINS ||
+	'http://localhost:5173'
+)
+	.split(',')
+	.map((o) => o.trim())
+	.filter(Boolean);
+
+app.use(
+	cors({
+		origin(origin, callback) {
+			// Certains contextes (Electron/file://) n'envoient pas d'en-tête Origin.
+			if (!origin) return callback(null, true);
+			if (corsOrigins.includes(origin)) return callback(null, true);
+			return callback(new Error(`CORS: origin non autorisée: ${origin}`));
+		},
+	})
+);
+
 app.get('/', (_req, res) => res.send('Nomina-backend running'));
+app.get('/healthz', (_req, res) => res.json({ ok: true }));
 app.use('/users', userRoutes);
 app.use('/auth', authRoutes);
 app.use('/categories', CategorieRoutes);

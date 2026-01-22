@@ -1,6 +1,7 @@
 ﻿node_modules/
-node_modules ndist .env n.DS_Store
+dist/
+.env
+.DS_Store
 
-/src/generated/prisma
-
-/src/generated/prisma
+# Prisma generated client (committed? usually no)
+src/generated/prisma/

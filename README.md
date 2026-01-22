@@ -15,12 +15,19 @@ Slogan court (suggestion pour logo) : **Créez, Nommez, Racontez**
 
 2. Configurez le fichier `.env` à la racine :
    DATABASE_URL=postgresql://...
-  JWT_SECRET=une_chaine_secrete
-  JWT_EXPIRES_IN=1h
+  CLERK_SECRET_KEY=sk_live_...
+  ADMIN_CLERK_USER_ID=user_...
+  CORS_ORIGIN=http://localhost:5173
 
 3. Lancez le serveur :  npm run dev
   
 4. Testez l’API avec le fichier `test.rest` (VS Code) ou Postman.
+
+## Web + Desktop + Offline
+
+- Le backend peut être déployé (API en ligne) et consommé par un **site web** et une **app Electron**.
+- CORS est configurable via `CORS_ORIGIN` (liste séparée par virgules). L'app Electron peut ne pas envoyer d'en-tête `Origin`.
+- Le mode offline se fait côté client (cache GET + outbox) et ne nécessite pas de changement côté API.
 
 ## Endpoints principaux
 

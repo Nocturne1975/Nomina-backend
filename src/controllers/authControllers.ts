@@ -1,18 +1,13 @@
-import jwt from 'jsonwebtoken';
-import type {Request, Response} from 'express';
+import type { Request, Response } from 'express';
 
+export const meController = (req: Request, res: Response) => {
+    const userId = req.auth?.userId;
+    if (!userId) return res.status(401).json({ error: 'Non authentifié' });
 
-export const loginController = (req: Request, res: Response) => {
-    const {email, password} = req.body;
-    
-    const token = jwt.sign(
-        {   sub: "1", 
-            email: email, 
-            role: "USER"
-        }, 
-            process.env.JWT_SECRET as string, 
-        { expiresIn: '1h'}
-    )
+    const isAdmin = Boolean(process.env.ADMIN_CLERK_USER_ID) && userId === process.env.ADMIN_CLERK_USER_ID;
+    return res.json({ userId, isAdmin });
+};
 
-    return res.json({token})
-}
+export const adminPingController = (_req: Request, res: Response) => {
+    return res.json({ ok: true });
+};

@@ -1,8 +1,10 @@
 import { Router } from 'express';
-import { loginController } from '../controllers/authControllers';
+import { adminPingController, meController } from '../controllers/authControllers';
+import { requireAdmin, requireAuth } from '../middleware/auth.middleware';
 
 const router = Router();
 
-router.post('/login', loginController);
+router.get('/me', requireAuth, meController);
+router.get('/admin/ping', requireAuth, requireAdmin, adminPingController);
 
 export default router;
