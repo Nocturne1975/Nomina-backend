@@ -1,5 +1,29 @@
 import type { Request, Response } from 'express';
+import { z } from 'zod';
 import prisma from '../utils/prisma';
+
+function canonicalizeGenre(input: unknown): "M" | "F" | "NB" | null {
+  if (input === undefined || input === null) return null;
+  if (typeof input !== "string") return null;
+
+  const raw = input.trim();
+  if (!raw) return null;
+  const lc = raw.toLowerCase();
+
+  if (["m", "masculin", "male", "homme"].includes(lc)) return "M";
+  if (["f", "féminin", "feminin", "female", "femme"].includes(lc)) return "F";
+  if (["nb", "non-binaire", "non binaire", "nonbinaire", "neutre", "neutral"].includes(lc)) return "NB";
+
+  if (raw === "M" || raw === "F" || raw === "NB") return raw;
+  return null;
+}
+
+const nomPersonnageBodySchema = z.object({
+  valeur: z.string().trim().min(1).optional(),
+  genre: z.string().optional().nullable(),
+  cultureId: z.union([z.string(), z.number()]).optional().nullable(),
+  categorieId: z.union([z.string(), z.number()]).optional().nullable(),
+});
 
 // GET - lister tous les noms de personnage
 export const getNomPersonnages = async (_req: Request, res: Response) => {
@@ -40,26 +64,23 @@ export const getNomPersonnageById = async (req: Request, res: Response) => {
 // POST - créer un nouveau NomPersonnage
 export const createNomPersonnage = async (req: Request, res: Response) => {
   try {
-    const {
-      valeur,
-      genre,
-      cultureId,
-      categorieId,
-    } = req.body as {
-      valeur?: string;
-      genre?: string;
-      cultureId?: number | string | null;
-      categorieId?: number | string | null;
-    };
+    const parsed = nomPersonnageBodySchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ error: "Payload invalide", issues: parsed.error.issues });
+    }
+
+    const { valeur, genre, cultureId, categorieId } = parsed.data;
 
     // conversion si les ids sont envoyés en string
     const cultureIdNum = cultureId !== undefined && cultureId !== null ? Number(cultureId) : null;
     const categorieIdNum = categorieId !== undefined && categorieId !== null ? Number(categorieId) : null;
 
+    const canonicalGenre = canonicalizeGenre(genre);
+
     const newNomPersonnage = await prisma.nomPersonnage.create({
       data: {
         valeur: valeur ?? null,
-        genre: genre ?? null,
+        genre: canonicalGenre,
         // on peut fournir directement les FK
         cultureId: cultureIdNum,
         categorieId: categorieIdNum,
@@ -76,17 +97,12 @@ export const createNomPersonnage = async (req: Request, res: Response) => {
 // PUT - modifier un NomPersonnage par son id
 export const updateNomPersonnage = async (req: Request, res: Response) => {
   try {
-    const {
-      valeur,
-      genre,
-      cultureId,
-      categorieId,
-    } = req.body as {
-      valeur?: string | null;
-      genre?: string | null;
-      cultureId?: number | string | null;
-      categorieId?: number | string | null;
-    };
+    const parsed = nomPersonnageBodySchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ error: "Payload invalide", issues: parsed.error.issues });
+    }
+
+    const { valeur, genre, cultureId, categorieId } = parsed.data;
 
     const cultureIdNum = cultureId !== undefined && cultureId !== null ? Number(cultureId) : null;
     const categorieIdNum = categorieId !== undefined && categorieId !== null ? Number(categorieId) : null;
@@ -95,7 +111,7 @@ export const updateNomPersonnage = async (req: Request, res: Response) => {
       where: { id: Number(req.params.id) },
       data: {
         valeur: valeur ?? null,
-        genre: genre ?? null,
+        genre: canonicalizeGenre(genre),
         cultureId: cultureIdNum,
         categorieId: categorieIdNum,
       },

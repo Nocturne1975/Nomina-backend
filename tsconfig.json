@@ -9,6 +9,6 @@
     "skipLibCheck": true,
     "moduleResolution": "node"
   },
-   "include": ["src/**/*","scripts/**/*","prisma/**/*"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules","dist"]
 }

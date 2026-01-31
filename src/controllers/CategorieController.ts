@@ -23,16 +23,37 @@ export const getCategorieById = async (req: Request, res: Response) => {
 // POST - creer une nouvelle catégorie
 export const createCategorie = async (req: Request, res: Response) => {
   try {
-    const { name, description } = req.body as { name: string; description: string };
+    const { name, description, universId, universName } = req.body as {
+      name: string;
+      description?: string;
+      universId?: number | string;
+      universName?: string;
+    };
+
+    if (!name) return res.status(400).json({ error: "name requis" });
+
     const newCategorie = await prisma.categorie.create({
-      data: { name, description },
+      data: {
+        name,
+        description,
+        univers: universId
+          ? { connect: { id: Number(universId) } }
+          : {
+              connectOrCreate: {
+                where: { name: universName ?? "Tous" },
+                create: { name: universName ?? "Tous" },
+              },
+            },
+      },
     });
+
     res.status(201).json(newCategorie);
   } catch (error) {
-    res.status(500).json({ error: 'Erreur serveur' });
+    res.status(500).json({ error: "Erreur serveur" });
   }
 };
 
+   
 // PUT - modifier la categorie par son id
 export const updateCategorie  = async (req: Request, res: Response) => {
   try {
@@ -67,3 +88,25 @@ export const totalCategorie = async (_req: Request, res: Response) => {
   }
 };
 
+// Lister toutes les categories pour le dropdown "Categorie"
+
+export const getCategories = async (req: Request, res: Response) => {
+  try {
+    const universIdRaw = req.query.universId;
+    const universId =
+      typeof universIdRaw === "string" && universIdRaw.trim() !== ""
+        ? Number(universIdRaw)
+        : undefined;
+
+    const categories = await prisma.categorie.findMany({
+      where: universId ? { universId } : undefined,
+      include: { univers: true },
+      orderBy: { id: "asc" },
+    });
+
+    res.json(categories);
+  } catch (error) {
+    console.error("Erreur getCategories:", error);
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+};

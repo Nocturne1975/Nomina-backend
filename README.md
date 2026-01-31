@@ -6,6 +6,8 @@ Nomina s’inscrit dans l’industrie du logiciel et de la création numérique,
 
 Slogan court (suggestion pour logo) : **Créez, Nommez, Racontez**
 
+Dossier de présentation (version “document”) : `docs/Dossier_Presentation_Nomina.md`
+
 * * *
 ## Installation & Lancement
 
@@ -23,9 +25,9 @@ Slogan court (suggestion pour logo) : **Créez, Nommez, Racontez**
   
 4. Testez l’API avec le fichier `test.rest` (VS Code) ou Postman.
 
-## Web + Desktop + Offline
+## src + Desktop + Offline
 
-- Le backend peut être déployé (API en ligne) et consommé par un **site web** et une **app Electron**.
+- Le backend peut être déployé (API en ligne) et consommé par un **site src** et une **app Electron**.
 - CORS est configurable via `CORS_ORIGIN` (liste séparée par virgules). L'app Electron peut ne pas envoyer d'en-tête `Origin`.
 - Le mode offline se fait côté client (cache GET + outbox) et ne nécessite pas de changement côté API.
 
@@ -54,11 +56,15 @@ Le schéma ER est disponible à la racine du dépôt sous forme d’image/PDF.
   - [Objectifs]
   - [Fonctionnalités principales]
   - [Spécification API (exemples)]
-    - [POST /generate-name]
-    - [POST /generate-place]
+    - [GET /healthz]
+    - [GET /generate/npcs]
+    - [GET /generate/nom-personnages]
+    - [GET /generate/lieux]
+    - [GET /generate/fragments-histoire]
+    - [GET /generate/titres]
   - [Exemples d'utilisation]
     - [curl]
-    - [Client Python (exemple minimal)]
+    - [Client JavaScript (exemple minimal)]
   - [Architecture technique (version locale / gratuite)]
   - [Design \& Branding]
     - [Palette \& typographie]
@@ -82,7 +88,7 @@ Nomina est une API destinée à générer des noms (personnages, lieux, objets, 
 Nomina vise principalement les utilisateurs suivants :
 
 1.  Développeurs
-    -   Intègrent la génération de noms et de mini-histoires dans leurs applications (jeux, sites web, outils, chatbots...).
+    -   Intègrent la génération de noms et de mini-histoires dans leurs applications (jeux, sites src, outils, chatbots...).
     -   Développeurs de jeux vidéo, jeux de rôle, applis d’écriture, etc.
 2.  Auteurs et écrivains
     -   Romans, nouvelles, BD, scénarios, en quête d’inspiration pour personnages, lieux ou objets.
@@ -102,81 +108,52 @@ Nomina vise principalement les utilisateurs suivants :
 -   Fournir une API simple et rapide pour générer des noms thématiques et personnalisables.
 -   Offrir des suggestions narratives (mini-histoires) associées aux noms.
 -   Être facilement intégrable (RESTful, JSON) et utilisable en local ou hébergé sur des plateformes simples.
--   Rester extensible (ajout futur de modèles, langues, export, interface web, etc.).
+-   Rester extensible (ajout futur de modèles, langues, export, interface src, etc.).
 
 * * *
 
 ## Fonctionnalités principales
 
--   Génération de noms : aléatoire, thématique (fantasy, contemporain, futuriste, historique).
--   Paramètres de personnalisation : genre, culture, longueur, consonance, type (personnage, lieu, objet).
--   Génération de mini-histoires/biographies associées au nom.
--   Endpoints REST simples, réponses JSON, documentation claire.
--   Possibilité d’utiliser une base locale (SQLite) ou une base plus riche (MongoDB).
+-   Génération de contenu : noms de personnages, lieux, titres et fragments narratifs.
+-   Génération de PNJ : combinaison de noms + fragments d’histoire pour produire une mini‑backstory.
+-   Paramètres via querystring : filtres (culture, catégorie, genre), quantité, et `seed` pour un résultat reproductible.
+-   Endpoints REST simples, réponses JSON.
+-   Persistance via base de données PostgreSQL (accès via Prisma).
 
 * * *
 
 ## Spécification API (exemples)
 
-Les routes ci-dessous sont des exemples pour documenter le format attendu.
+Les routes ci-dessous reflètent l’implémentation actuelle (Express).
 
-### POST /generate-name
+### GET /healthz
 
--   Description : Génère un nom de personne ou de créature.
--   URL : `/generate-name`
--   Méthode : POST
--   Body (JSON) — champs possibles :
-    -   `genre` : "M" | "F" | "NB" (optionnel)
-    -   `culture` : string (ex. "Nordique", "Médiévale", "Futuriste")
-    -   `theme` : string (ex. "Fantasy", "Contemporain")
-    -   `length` : int (désirée : 3..15)
-    -   `with_story` : bool (ajouter une mini-histoire)
--   Exemple de requête :
+-   Statut de santé du backend.
 
-```json
-{
-  "genre": "F",
-  "culture": "Nordique",
-  "theme": "Fantasy",
-  "with_story": true
-}
-```
+### GET /generate/npcs
 
--   Exemple de réponse :
+-   Génère des idées de PNJ (noms + mini‑backstories).
+-   Paramètres (query) possibles : `count`, `cultureId`, `categorieId`, `genre`, `seed`.
 
-```json
-{
-  "name": "Astridr",
-  "story": "Née sous les aurores boréales, Astridr est destinée à devenir une grande guerrière des terres du Nord."
-}
-```
+### GET /generate/nom-personnages
 
-### POST /generate-place
+-   Tire des noms de personnages depuis la base selon filtres.
+-   Paramètres (query) possibles : `count`, `cultureId`, `categorieId`, `genre`, `seed`.
 
--   Description : Génère un nom et une description pour un lieu (ville, région, lieu magique).
--   URL : `/generate-place`
--   Méthode : POST
--   Body (JSON) — champs possibles :
-    -   `type` : "ville" | "région" | "site" ...
-    -   `theme` : string (ex. "Futuriste")
-    -   `size` : "small" | "medium" | "large" (optionnel)
--   Exemple de requête :
+### GET /generate/lieux
 
-```json
-{
-  "type": "ville",
-  "theme": "Futuriste"
-}
-```
+-   Tire des lieux depuis la base selon filtres.
+-   Paramètres (query) possibles : `count`, `categorieId`, `seed`.
 
--   Exemple de réponse :
+### GET /generate/fragments-histoire
 
-```json
-{
-  "name": "Neotropolis",
-  "description": "Capitale technologique où l'humain et la machine vivent en harmonie."
-}
-```
+-   Tire des fragments d’histoire selon filtres.
+-   Paramètres (query) possibles : `count`, `cultureId`, `categorieId`, `genre`, `appliesTo`, `seed`.
+
+### GET /generate/titres
+
+-   Tire des titres selon filtres.
+-   Paramètres (query) possibles : `count`, `cultureId`, `categorieId`, `genre`, `seed`.
 
 * * *
 
@@ -185,38 +162,28 @@ Les routes ci-dessous sont des exemples pour documenter le format attendu.
 ### curl
 
 ```bash
-curl -X POST "http://localhost:8000/generate-name" \
-  -H "Content-Type: application/json" \
-  -d '{"genre":"F","culture":"Nordique","theme":"Fantasy","with_story":true}'
+curl "http://localhost:3000/generate/npcs?count=5&seed=demo"
 ```
 
-### Client Python (exemple minimal)
+### Client JavaScript (exemple minimal)
 
-```python
-import requests
-
-url = "http://localhost:8000/generate-name"
-payload = {
-    "genre": "F",
-    "culture": "Nordique",
-    "theme": "Fantasy",
-    "with_story": True
-}
-r = requests.post(url, json=payload)
-print(r.json())
+```js
+const res = await fetch("http://localhost:3000/generate/nom-personnages?count=10&seed=demo");
+const data = await res.json();
+console.log(data);
 ```
 
 * * *
 
 ## Architecture technique (version locale / gratuite)
 
--   Backend : Python + FastAPI (léger, rapide pour prototyper)
--   DB (option locale simple) : SQLite — suffisant pour prototypage
--   DB (option évoluée) : MongoDB si tu veux stocker modèles / jeux de noms
--   Hébergement : local (localhost) ou plateformes simples / gratuites : Render, Railway, Vercel (pour fonctions serverless)
--   Sécurité : endpoints protégés par token (JWT possible), éventuellement rate limiting si public
+-   Backend : Node.js + TypeScript + Express
+-   Accès aux données : Prisma
+-   Base de données : PostgreSQL
+-   Authentification : Clerk (token Bearer) + rôles (Admin via variable d’environnement)
+-   Déploiement : Docker + Fly.io (release command de migration Prisma)
 
-Schéma simplifié : Utilisateur → Front (web/app) → API Nomina (FastAPI) → BD (SQLite/MongoDB) → Résultat
+Schéma simplifié : Utilisateur → UI (web/desktop) → API Nomina (Express) → PostgreSQL (Prisma) → Résultat
 
 * * *
 
@@ -246,20 +213,8 @@ Schéma simplifié : Utilisateur → Front (web/app) → API Nomina (FastAPI) �
 
 ## Déploiement (options simples)
 
--   Local : `uvicorn main:app --reload --host 0.0.0.0 --port 8000`
--   Render / Railway : connecte ton repo GitHub, choisis build command (ex. `pip install -r requirements.txt`) et run command (`uvicorn main:app --host 0.0.0.0 --port $PORT`).
--   Vercel : plutôt pour front / serverless functions (si tu veux transformer certains endpoints en serverless).
-
-Annexe rapide "requirements.txt" typique :
-
-```
-fastapi
-uvicorn[standard]
-pydantic
-aiohttp
-requests
-python-dotenv
-```
+-   Local : `npm install` puis `npm run dev`
+-   Fly.io : déploiement Docker (voir `fly.toml`) avec exécution des migrations Prisma au déploiement.
 
 * * *
 
@@ -286,6 +241,6 @@ Indique la licence choisie (ex. MIT, Apache-2.0). Exemple :
 
 -   `docs/` : documentation détaillée des endpoints, exemples supplémentaires
 -   `assets/` : logos, icônes, palette couleur (PNG / SVG)
--   `examples/` : scripts d'exemple (client Python, Node.js), mock data
+-   `examples/` : scripts d'exemple (client Node.js), mock data
 -   `LICENSE` : fichier de licence
 -   `CONTRIBUTING.md` : guide de contribution

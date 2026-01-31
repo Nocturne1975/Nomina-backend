@@ -1,13 +1,20 @@
-import { Router } from 'express';
-import { getCultureById, createCulture, updateCulture, deleteCulture, totalCulture } from '../controllers/CultureController';
-
+import { Router } from "express";
+import {
+  getCultures,
+  getCultureById,
+  createCulture,
+  updateCulture,
+  deleteCulture,
+  totalCulture,
+} from "../controllers/CultureController";
 
 const router = Router();
 
-router.get('/:id', getCultureById);
-router.post('/', createCulture);
-router.put('/:id', updateCulture);
-router.delete('/:id', deleteCulture);
-router.get('/total', totalCulture);
+router.get("/total", totalCulture);
+router.get("/", getCultures);
+router.get("/:id", getCultureById);
+router.post("/", createCulture);
+router.put("/:id", updateCulture);
+router.delete("/:id", deleteCulture);
 
 export default router;

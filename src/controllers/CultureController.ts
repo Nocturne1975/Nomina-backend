@@ -62,3 +62,14 @@ export const totalCulture = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Erreur serveur' });
   }
 };
+
+// Lister toutes les cultures pour le dropdown "Culture"
+export const getCultures = async (_req: Request, res: Response) => {
+  try {
+    const cultures = await prisma.culture.findMany({ orderBy: { id: "asc" } });
+    res.json(cultures);
+  } catch (error) {
+    console.error("Erreur getCultures:", error);
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+};
